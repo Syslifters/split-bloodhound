@@ -1,12 +1,16 @@
 import json
 import os
+import pickle
 from pathlib import Path
 
 import click
 import ijson
 
 
-def write_chunk(filename, chunk_data, meta):
+def write_chunk(filename, chunk_data, chunk_size, meta):
+    print(
+        f"Writing {filename} with {len(chunk_data)} records and {int(chunk_size / 1024 / 1024)} MB..."
+    )
     meta["count"] = len(chunk_data)
     with open(
         filename,
@@ -19,6 +23,7 @@ def write_chunk(filename, chunk_data, meta):
             },
             f,
         )
+    
 
 
 @click.command()
@@ -35,6 +40,7 @@ def run(input, output_dir, chunksize):
     # Chunksize to bytes
     if not chunksize:
         chunksize = os.path.getsize(input) / 10
+        print(f"Set chunksize to {chunksize} GB.")
     chunksize = int(chunksize) * 1024 * 1024 * 1024
 
     file_counter = 0
@@ -42,27 +48,29 @@ def run(input, output_dir, chunksize):
 
     with open(input, "rb") as f:
         # Get version
+        print('Retrieving "meta" key...')
         meta = {k: v for k, v in ijson.kvitems(f, "meta")}
+        f.seek(0)
         chunk_data = []
         current_chunksize = 0
+
+        print("Splitting file...")
         for record in ijson.items(f, "data.item"):
             counter += 1
-            record_size = len(json.dumps(record))
+            record_size = len(pickle.dumps(record))
             if current_chunksize + record_size > chunksize:
                 file_counter += 1
                 filename = f"{output_dir / output_file_prefix}_{file_counter}.json"
-                write_chunk(filename, chunk_data, meta)
-                print(
-                    f"Wrote {filename} with {len(chunk_data)} records and {current_chunksize / 1024 / 1024} MB."
-                )
+                write_chunk(filename, chunk_data, current_chunksize, meta)
                 chunk_data = []
+                current_chunksize = 0
             chunk_data.append(record)
             current_chunksize += record_size
 
         # Last chunk
         file_counter += 1
         filename = f"{output_dir / output_file_prefix}_{file_counter}.json"
-        write_chunk(filename, chunk_data, meta)
+        write_chunk(filename, chunk_data, current_chunksize, meta)
 
 
 if __name__ == "__main__":
