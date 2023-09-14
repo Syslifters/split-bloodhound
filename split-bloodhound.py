@@ -23,7 +23,6 @@ def write_chunk(filename, chunk_data, chunk_size, meta):
             },
             f,
         )
-    
 
 
 @click.command()
@@ -40,8 +39,9 @@ def run(input, output_dir, chunksize):
     # Chunksize to bytes
     if not chunksize:
         chunksize = os.path.getsize(input) / 10
-        print(f"Set chunksize to {chunksize} GB.")
-    chunksize = int(chunksize) * 1024 * 1024 * 1024
+        print(f"Set chunksize to {int(chunksize / 1024 / 1024 / 1024)} GB.")
+    else:
+        chunksize = int(chunksize) * 1024 * 1024 * 1024
 
     file_counter = 0
     counter = 0
