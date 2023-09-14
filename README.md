@@ -9,9 +9,9 @@ This tool uses ijson which loads accessed items to memory only.
 ```
 git clone https://github.com/Syslifters/split-bloodhound.git
 pip3 install -r requirements.txt
-python3 split-bloodhound.py --input input.json
-python3 split-bloodhound.py --input input.json --output-dir out/
-python3 split-bloodhound.py --input input.json --chunksize 2  # Chunksize 2 GB; default 10% of the filesize
+python3 split-bloodhound.py input.json
+python3 split-bloodhound.py input.json --output-dir out/
+python3 split-bloodhound.py input.json --chunksize 2  # Chunksize 2 GB; default 10% of the filesize
 ```
 
 
