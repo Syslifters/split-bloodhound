@@ -39,9 +39,9 @@ def run(input, output_dir, chunksize):
     # Chunksize to bytes
     if not chunksize:
         chunksize = os.path.getsize(input) / 10
-        print(f"Set chunksize to {int(chunksize / 1024 / 1024 / 1024)} GB.")
     else:
-        chunksize = int(chunksize) * 1024 * 1024 * 1024
+        chunksize = float(chunksize) * 1024 * 1024 * 1024
+    print(f"Set chunksize to {round(chunksize / 1024 / 1024 / 1024, 2)} GB.")
 
     file_counter = 0
     counter = 0
