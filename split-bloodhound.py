@@ -26,7 +26,7 @@ def write_chunk(filename, chunk_data, chunk_size, meta):
 
 
 @click.command()
-@click.option("--input", "-i", required=True, help="Input file")
+@click.argument("input")
 @click.option("--output-dir", "-o", help="Output directory")
 @click.option("--chunksize", "-s", help="Chunk size of output files in GB")
 def run(input, output_dir, chunksize):
